@@ -1,42 +1,18 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:planner_app/grocery/grocery_home_screen.dart';
-import 'package:planner_app/health/health_home_screen.dart';
+import 'package:planner_app/grocery/category/categories_screen.dart';
+import 'package:planner_app/grocery/item/items_screen.dart';
+import 'package:planner_app/grocery/store/stores_screen.dart';
+import 'package:planner_app/main.dart';
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-final GlobalKey<ScaffoldMessengerState> scaffoldKey =
-    GlobalKey<ScaffoldMessengerState>();
-
-void main() {
-  runApp(PlannerApp());
-}
-
-class PlannerApp extends StatelessWidget {
-  const PlannerApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Planner App',
-      navigatorKey: navigatorKey,
-      scaffoldMessengerKey: scaffoldKey,
-      theme: ThemeData(
-        appBarTheme: const AppBarTheme(backgroundColor: Colors.blue),
-      ),
-      debugShowCheckedModeBanner: false,
-      home: PlannerHomeScreen(),
-    );
-  }
-}
-
-class PlannerHomeScreen extends StatelessWidget {
-  const PlannerHomeScreen({super.key});
+class GroceryHomeScreen extends StatelessWidget {
+  const GroceryHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(title: Text("Planner")),
+      appBar: AppBar(title: Text("Grocery")),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
         child: Column(
@@ -45,7 +21,7 @@ class PlannerHomeScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 navigatorKey.currentState?.push(
-                  MaterialPageRoute(builder: (_) => HealthHomeScreen()),
+                  MaterialPageRoute(builder: (_) => ItemsScreen()),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -53,7 +29,7 @@ class PlannerHomeScreen extends StatelessWidget {
                 backgroundColor: Colors.blueGrey[200],
               ),
               child: AutoSizeText(
-                'Health',
+                'Items',
                 style: TextStyle(fontSize: 50, color: Colors.black),
                 maxLines: 1,
               ),
@@ -61,7 +37,7 @@ class PlannerHomeScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 navigatorKey.currentState?.push(
-                  MaterialPageRoute(builder: (_) => GroceryHomeScreen()),
+                  MaterialPageRoute(builder: (_) => CategoriesScreen()),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -69,7 +45,23 @@ class PlannerHomeScreen extends StatelessWidget {
                 backgroundColor: Colors.blueGrey[200],
               ),
               child: AutoSizeText(
-                'Grocery',
+                'Categories',
+                style: TextStyle(fontSize: 50, color: Colors.black),
+                maxLines: 1,
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                navigatorKey.currentState?.push(
+                  MaterialPageRoute(builder: (_) => StoresScreen()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size.fromHeight(100),
+                backgroundColor: Colors.blueGrey[200],
+              ),
+              child: AutoSizeText(
+                'Stores',
                 style: TextStyle(fontSize: 50, color: Colors.black),
                 maxLines: 1,
               ),
