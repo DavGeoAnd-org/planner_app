@@ -95,7 +95,11 @@ class _WeightScreenState extends State<WeightScreen> {
 
   static Future<List<WeightRecord>> getWeightRecords() async {
     final response = await http
-        .get(Uri.parse(const String.fromEnvironment('SERVICE_URL')))
+        .get(
+          Uri.parse(
+            "${const String.fromEnvironment('SERVICE_URL')}/health/weightRecords",
+          ),
+        )
         .timeout(
           const Duration(seconds: 10),
           onTimeout: () {
@@ -119,7 +123,9 @@ class _WeightScreenState extends State<WeightScreen> {
 
     final response = await http
         .post(
-          Uri.parse(const String.fromEnvironment('SERVICE_URL')),
+          Uri.parse(
+            "${const String.fromEnvironment('SERVICE_URL')}/health/weightRecords",
+          ),
           body: weightRecord.toJson(),
         )
         .timeout(

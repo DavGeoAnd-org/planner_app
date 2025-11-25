@@ -8,7 +8,7 @@
             "args": [
                 "--web-browser-flag",
                 "--disable-web-security",
-                "--dart-define=SERVICE_URL=http://192.168.1.248:8080/planner/health/weightRecords"
+                "--dart-define=BASE_SERVICE_URL=http://192.168.1.248:8080/planner"
             ],
             "deviceId": "chrome",
             "flutterMode": "debug",
@@ -19,7 +19,7 @@
             "request": "launch",
             "type": "dart",
             "args": [
-                "--dart-define=SERVICE_URL=http://homeproject-services-lb-1776073483.us-east-1.elb.amazonaws.com/planner/health/weightRecords",
+                "--dart-define=BASE_SERVICE_URL=http://homeproject-services-lb-1776073483.us-east-1.elb.amazonaws.com/planner",
             ],
             "deviceId": "R5CY328KMRA",
             "flutterMode": "release",
