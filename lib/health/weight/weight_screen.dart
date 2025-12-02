@@ -97,7 +97,7 @@ class _WeightScreenState extends State<WeightScreen> {
     final response = await http
         .get(
           Uri.parse(
-            "${const String.fromEnvironment('SERVICE_URL')}/health/weightRecords",
+            "${const String.fromEnvironment('BASE_SERVICE_URL')}/health/weightRecords",
           ),
         )
         .timeout(
@@ -124,7 +124,7 @@ class _WeightScreenState extends State<WeightScreen> {
     final response = await http
         .post(
           Uri.parse(
-            "${const String.fromEnvironment('SERVICE_URL')}/health/weightRecords",
+            "${const String.fromEnvironment('BASE_SERVICE_URL')}/health/weightRecords",
           ),
           body: weightRecord.toJson(),
         )
