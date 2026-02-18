@@ -4,7 +4,9 @@ import 'package:planner_app/grocery/item/item.dart';
 
 class ItemDetailScreen extends StatefulWidget {
   const ItemDetailScreen({super.key, required this.item});
+
   final Item item;
+
   @override
   State<StatefulWidget> createState() {
     return _ItemDetailScreenState();

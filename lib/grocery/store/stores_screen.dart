@@ -18,6 +18,7 @@ class StoresScreen extends StatefulWidget {
 
 class _StoresScreenState extends State<StoresScreen> {
   late Future<List<Store>> stores;
+
   @override
   void initState() {
     super.initState();

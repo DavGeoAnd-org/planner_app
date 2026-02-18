@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:planner_app/grocery/grocery_home_screen.dart';
 import 'package:planner_app/health/health_home_screen.dart';
+import 'package:planner_app/workout/workout_home_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<ScaffoldMessengerState> scaffoldKey =
@@ -70,6 +71,22 @@ class PlannerHomeScreen extends StatelessWidget {
               ),
               child: AutoSizeText(
                 'Grocery',
+                style: TextStyle(fontSize: 50, color: Colors.black),
+                maxLines: 1,
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                navigatorKey.currentState?.push(
+                  MaterialPageRoute(builder: (_) => WorkoutHomeScreen()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size.fromHeight(100),
+                backgroundColor: Colors.blueGrey[200],
+              ),
+              child: AutoSizeText(
+                'Workout',
                 style: TextStyle(fontSize: 50, color: Colors.black),
                 maxLines: 1,
               ),

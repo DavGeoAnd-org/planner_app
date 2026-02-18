@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:multi_dropdown/multi_dropdown.dart';
-
 import 'package:planner_app/grocery/item/item.dart';
 import 'package:planner_app/grocery/item/item_detail_screen.dart';
 import 'package:planner_app/grocery/item/item_request.dart';
@@ -20,6 +19,7 @@ class ItemsScreen extends StatefulWidget {
 
 class _ItemsScreenState extends State<ItemsScreen> {
   late Future<List<Item>> items;
+
   @override
   void initState() {
     super.initState();

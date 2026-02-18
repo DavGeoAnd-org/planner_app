@@ -3,6 +3,7 @@ import 'dart:convert';
 class Store {
   String? id;
   String name;
+
   Store({this.id, required this.name});
 
   Store copyWith({String? id, String? name}) {
@@ -45,6 +46,7 @@ class Store {
 class StoreWithLocation {
   Store store;
   String location;
+
   StoreWithLocation({required this.store, required this.location});
 
   StoreWithLocation copyWith({Store? store, String? location}) {

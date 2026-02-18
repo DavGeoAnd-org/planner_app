@@ -15,6 +15,7 @@ class CategoriesScreen extends StatefulWidget {
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
   late Future<List<Category>> categories;
+
   @override
   void initState() {
     super.initState();
