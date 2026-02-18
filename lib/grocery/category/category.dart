@@ -3,6 +3,7 @@ import 'dart:convert';
 class Category {
   String? id;
   String name;
+
   Category({this.id, required this.name});
 
   Category copyWith({String? id, String? name}) {

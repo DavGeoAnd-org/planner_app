@@ -7,7 +7,9 @@ import 'package:planner_app/main.dart';
 
 class StoreDetailScreen extends StatefulWidget {
   const StoreDetailScreen({super.key, required this.store});
+
   final Store store;
+
   @override
   State<StatefulWidget> createState() {
     return _StoreDetailScreenState();
@@ -16,6 +18,7 @@ class StoreDetailScreen extends StatefulWidget {
 
 class _StoreDetailScreenState extends State<StoreDetailScreen> {
   late Future<List<Category>> listCategories;
+
   @override
   void initState() {
     super.initState();

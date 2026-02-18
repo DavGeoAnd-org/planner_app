@@ -4,6 +4,7 @@ class WeightRecord {
   String? id;
   DateTime? timestamp;
   double weight;
+
   WeightRecord({this.id, this.timestamp, required this.weight});
 
   WeightRecord copyWith({String? id, DateTime? timestamp, double? weight}) {

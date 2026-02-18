@@ -7,6 +7,7 @@ import 'package:planner_app/grocery/store/store.dart';
 class Item {
   String? id;
   String name;
+
   Item({this.id, required this.name});
 
   Item copyWith({String? id, String? name}) {
@@ -50,6 +51,7 @@ class ItemFullDetail {
   Item item;
   Category category;
   List<StoreWithLocation> stores;
+
   ItemFullDetail({
     required this.item,
     required this.category,
