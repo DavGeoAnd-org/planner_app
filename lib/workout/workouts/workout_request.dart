@@ -95,3 +95,45 @@ Future<String> addWorkout(
     throw Exception('Failed to add workout');
   }
 }
+
+Future<String> updateWorkout(
+  WorkoutDetail workoutDetail,
+  String when,
+  List<StepInput> stepInputs,
+) async {
+  List<Step> steps = List.empty(growable: true);
+  for (var i = 0; i < stepInputs.length; i++) {
+    Exercise exercise =
+        stepInputs[i].selectController.selectedItems.first.value;
+    steps.add(
+      Step(
+        exercise: exercise,
+        note: stepInputs[i].noteController.text,
+        order: i,
+      ),
+    );
+  }
+
+  workoutDetail.when = when;
+  workoutDetail.steps = steps;
+
+  final response = await http
+      .put(
+        Uri.parse(
+          "${const String.fromEnvironment('BASE_SERVICE_URL')}/workout/workouts",
+        ),
+        body: workoutDetail.toJson(),
+      )
+      .timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw const HttpException("Service Not Running");
+        },
+      );
+
+  if (response.statusCode == 200) {
+    return (jsonDecode(response.body) as Map<String, dynamic>)['message'];
+  } else {
+    throw Exception('Failed to update workout');
+  }
+}

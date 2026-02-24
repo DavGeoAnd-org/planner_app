@@ -37,11 +37,21 @@ class Step with StepMappable {
 
 class StepInput extends StatelessWidget {
   final List<Exercise> exercises;
-  final TextEditingController noteController = TextEditingController();
-  final MultiSelectController<Exercise> selectController =
-      MultiSelectController();
+  late final TextEditingController noteController;
+  late final MultiSelectController<Exercise> selectController;
+  late final String initialStep;
 
-  StepInput({super.key, required this.exercises});
+  StepInput({super.key, required this.exercises}) {
+    noteController = TextEditingController();
+    selectController = MultiSelectController();
+    initialStep = '';
+  }
+
+  StepInput.fromStep({super.key, required this.exercises, required Step step}) {
+    noteController = TextEditingController(text: step.note);
+    selectController = MultiSelectController();
+    initialStep = step.exercise.name;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +61,11 @@ class StepInput extends StatelessWidget {
         Expanded(
           child: MultiDropdown<Exercise>(
             items: exercises
-                .map((e) => DropdownItem(label: e.name, value: e))
+                .map(
+                  (e) => e.name == initialStep
+                      ? DropdownItem(label: e.name, value: e, selected: true)
+                      : DropdownItem(label: e.name, value: e),
+                )
                 .toList(),
             singleSelect: true,
             searchEnabled: true,
