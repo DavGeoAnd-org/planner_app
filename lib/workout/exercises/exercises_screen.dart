@@ -58,13 +58,17 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                     itemBuilder: (exercise) => Card(
                       child: ListTile(
                         title: Text(exercise.name),
-                        onTap: () {
-                          navigatorKey.currentState?.push(
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  ExerciseDetailScreen(exercise: exercise),
-                            ),
-                          );
+                        onTap: () async {
+                          final bool? result = await navigatorKey.currentState
+                              ?.push(
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      ExerciseDetailScreen(exercise: exercise),
+                                ),
+                              );
+                          if (result != null && result) {
+                            update();
+                          }
                         },
                       ),
                     ),

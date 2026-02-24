@@ -67,3 +67,40 @@ Future<String> addExercise(
     throw Exception('Failed to add exercise');
   }
 }
+
+Future<String> updateExercise(
+  Exercise exercise,
+  String primaryMuscle,
+  String secondaryMuscles,
+  String equipment,
+  String difficulty,
+  String exerciseType,
+  String instructions,
+) async {
+  exercise.primaryMuscle = primaryMuscle;
+  exercise.secondaryMuscles = secondaryMuscles;
+  exercise.equipment = equipment;
+  exercise.difficulty = difficulty;
+  exercise.exerciseType = exerciseType;
+  exercise.instructions = instructions;
+
+  final response = await http
+      .put(
+        Uri.parse(
+          "${const String.fromEnvironment('BASE_SERVICE_URL')}/workout/exercises",
+        ),
+        body: exercise.toJson(),
+      )
+      .timeout(
+        const Duration(seconds: 30),
+        onTimeout: () {
+          throw const HttpException("Service Not Running");
+        },
+      );
+
+  if (response.statusCode == 200) {
+    return (jsonDecode(response.body) as Map<String, dynamic>)['message'];
+  } else {
+    throw Exception('Failed to update exercise');
+  }
+}
