@@ -39,6 +39,7 @@ dependencies:
   multi_dropdown: ^3.0.1
   dart_mappable: ^4.6.1
   searchable_listview: ^2.19.4
+  fl_chart: ^1.2.0
 
 dev_dependencies:
   flutter_test:
