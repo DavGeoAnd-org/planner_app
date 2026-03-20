@@ -11,28 +11,30 @@ class HealthHomeScreen extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(title: Text("Health")),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          spacing: 20,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                navigatorKey.currentState?.push(
-                  MaterialPageRoute(builder: (_) => WeightScreen()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size.fromHeight(100),
-                backgroundColor: Colors.blueGrey[200],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            spacing: 20,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  navigatorKey.currentState?.push(
+                    MaterialPageRoute(builder: (_) => WeightScreen()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size.fromHeight(100),
+                  backgroundColor: Colors.blueGrey[200],
+                ),
+                child: AutoSizeText(
+                  'Weight',
+                  style: TextStyle(fontSize: 50, color: Colors.black),
+                  maxLines: 1,
+                ),
               ),
-              child: AutoSizeText(
-                'Weight',
-                style: TextStyle(fontSize: 50, color: Colors.black),
-                maxLines: 1,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
