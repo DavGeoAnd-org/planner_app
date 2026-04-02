@@ -1,8 +1,13 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:planner_app/grocery/category/category.dart';
 import 'package:planner_app/grocery/category/category_detail_screen.dart';
 import 'package:planner_app/grocery/category/category_request.dart';
-import 'package:planner_app/main.dart';
+import 'package:searchable_listview/searchable_listview.dart';
+
+import '../../helper.dart';
+import '../../main.dart';
+import 'category_new_screen.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
@@ -14,100 +19,112 @@ class CategoriesScreen extends StatefulWidget {
 }
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
-  late Future<List<Category>> categories;
-
-  @override
-  void initState() {
-    super.initState();
-    categories = getCategories();
-  }
+  int _searchableListKey = 1;
+  int _listTileKey = 1;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(title: Text("Categories")),
-      body: FutureBuilder(
-        future: categories,
-        builder: (BuildContext context, AsyncSnapshot<List<Category>> snapshot) {
-          if (snapshot.hasData) {
-            List<Category> categoryList = snapshot.data!;
-            return ListView.builder(
-              itemCount: categoryList.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  child: ListTile(
-                    title: Text(categoryList[index].name),
-                    onTap: () {
-                      navigatorKey.currentState?.push(
-                        MaterialPageRoute(
-                          builder: (_) => CategoryDetailScreen(
-                            category: categoryList[index],
-                          ),
-                        ),
-                      );
-                    },
-                    trailing: IconButton(
+      resizeToAvoidBottomInset: ScaffoldDefault.resizeToAvoidBottomInset(),
+      appBar: AppBar(
+        title: AutoSizeText(
+          'Categories',
+          maxLines: ScaffoldDefault.textMaxLines(),
+        ),
+        // leading: BackButton(onPressed: () {}),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () async {
+              final bool? result = await navigatorKey.currentState?.push(
+                MaterialPageRoute(builder: (_) => CategoryNewScreen()),
+              );
+              if (result != null && result) {
+                setState(() {
+                  _searchableListKey *= -1;
+                });
+              }
+            },
+          ),
+        ],
+      ),
+      body: SafeArea(
+        minimum: SafeAreaDefault.minimum(),
+        child: SearchableList<CategoryWithStoreListStatus>.async(
+          key: ValueKey(_searchableListKey),
+          asyncListCallback: () async =>
+              await allCategoriesWithStoreListStatus(),
+          asyncListFilter: (query, list) => list
+              .where(
+                (category) => category.name.toUpperCase().contains(query.toUpperCase()),
+              )
+              .toList(),
+          itemBuilder: (category) => Card(
+            child: ListTile(
+              key: ValueKey(_listTileKey),
+              title: AutoSizeText(
+                category.name,
+                maxLines: SearchableListDefault.textMaxLines(),
+              ),
+              onTap: () async {
+                final bool? result = await navigatorKey.currentState?.push(
+                  MaterialPageRoute(
+                    builder: (_) => CategoryDetailScreen(
+                      category: RecordId.stringValueFromId(category.id),
+                    ),
+                  ),
+                );
+                if (result != null && result) {
+                  setState(() {
+                    _searchableListKey *= -1;
+                  });
+                }
+              },
+              trailing: category.storeListStatus
+                  ? IconButton(
                       onPressed: () async {
-                        List<String> storesList = await addCategoryToLists(
-                          categoryList[index].name,
+                        List<String> storesList =
+                            await removeCategoryFromStoreLists(
+                              RecordId.stringValueFromId(category.id),
+                            );
+                        category.storeListStatus = false;
+                        final snackBar = SnackBar(
+                          content: Text(
+                            "Removed from: ${storesList.reduce((value, element) => "$value, $element")}",
+                          ),
                         );
+                        scaffoldKey.currentState!.showSnackBar(snackBar);
+                        setState(() {
+                          _listTileKey *= -1;
+                        });
+                      },
+                      icon: Icon(Icons.remove),
+                    )
+                  : IconButton(
+                      onPressed: () async {
+                        List<String> storesList = await addCategoryToStoreLists(
+                          RecordId.stringValueFromId(category.id),
+                        );
+                        category.storeListStatus = true;
                         final snackBar = SnackBar(
                           content: Text(
                             "Added to: ${storesList.reduce((value, element) => "$value, $element")}",
                           ),
                         );
                         scaffoldKey.currentState!.showSnackBar(snackBar);
+                        setState(() {
+                          _listTileKey *= -1;
+                        });
                       },
                       icon: Icon(Icons.add),
                     ),
-                  ),
-                );
-              },
-            );
-          } else if (snapshot.hasError) {
-            return Text('${snapshot.error}');
-          }
-          return Center(child: CircularProgressIndicator());
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          TextEditingController categoryController = TextEditingController();
-          bool result = await showDialog(
-            context: context,
-            builder: (BuildContext context) => AlertDialog(
-              content: TextField(
-                controller: categoryController,
-                keyboardType: TextInputType.name,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter category',
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => navigatorKey.currentState?.pop(false),
-                  child: Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    addCategory(
-                      categoryController.text,
-                    ).then((result) => navigatorKey.currentState?.pop(true));
-                  },
-                  child: Text('Add'),
-                ),
-              ],
             ),
-          );
-          if (result) {
-            setState(() {
-              categories = getCategories();
-            });
-          }
-        },
-        child: Icon(Icons.add),
+          ),
+          loadingWidget: const Center(child: CircularProgressIndicator()),
+          errorWidget: const Center(child: Icon(Icons.error)),
+          inputDecoration: InputDecoration(labelText: 'Search Category'),
+          listViewPadding: SearchableListDefault.listViewPadding(),
+        ),
       ),
     );
   }

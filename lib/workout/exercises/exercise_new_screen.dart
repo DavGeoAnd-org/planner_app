@@ -22,7 +22,7 @@ class ExerciseNewScreen extends StatelessWidget {
       appBar: AppBar(title: Text('New Exercise')),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsetsGeometry.all(20),
+          padding: EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 10,
@@ -30,49 +30,49 @@ class ExerciseNewScreen extends StatelessWidget {
               TextField(
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'Name',
+                  labelText: 'Name',
                 ),
                 controller: nameController,
               ),
               TextField(
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'Primary Muscle',
+                  labelText: 'Primary Muscle',
                 ),
                 controller: primaryMuscleController,
               ),
               TextField(
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'Secondary Muscles',
+                  labelText: 'Secondary Muscles',
                 ),
                 controller: secondaryMusclesController,
               ),
               TextField(
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'Equipment',
+                  labelText: 'Equipment',
                 ),
                 controller: equipmentController,
               ),
               TextField(
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'Difficulty',
+                  labelText: 'Difficulty',
                 ),
                 controller: difficultyController,
               ),
               TextField(
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'Exercise Type',
+                  labelText: 'Exercise Type',
                 ),
                 controller: exerciseTypeController,
               ),
               TextField(
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'Instructions',
+                  labelText: 'Instructions',
                 ),
                 controller: instructionsController,
                 minLines: 5,

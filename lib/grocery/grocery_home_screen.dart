@@ -5,68 +5,89 @@ import 'package:planner_app/grocery/item/items_screen.dart';
 import 'package:planner_app/grocery/store/stores_screen.dart';
 import 'package:planner_app/main.dart';
 
+import '../helper.dart';
+
 class GroceryHomeScreen extends StatelessWidget {
   const GroceryHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(title: Text("Grocery")),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(20),
-        child: Column(
-          spacing: 20,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                navigatorKey.currentState?.push(
-                  MaterialPageRoute(builder: (_) => ItemsScreen()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size.fromHeight(100),
-                backgroundColor: Colors.blueGrey[200],
+      resizeToAvoidBottomInset: ScaffoldDefault.resizeToAvoidBottomInset(),
+      appBar: AppBar(
+        title: AutoSizeText(
+          'Grocery',
+          maxLines: ElevatedButtonDefault.textMaxLines(),
+        ),
+        // leading: BackButton(onPressed: () {}),
+        actions: [],
+      ),
+      body: SafeArea(
+        minimum: SafeAreaDefault.minimum(),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: ColumnDefault.crossAxisAlignment(),
+            spacing: ColumnDefault.spacing(),
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  navigatorKey.currentState?.push(
+                    MaterialPageRoute(builder: (_) => ItemsScreen()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  minimumSize: ElevatedButtonDefault.minimumSize(),
+                  backgroundColor: ElevatedButtonDefault.backgroundColor(),
+                ),
+                child: AutoSizeText(
+                  'Items',
+                  style: TextStyle(
+                    fontSize: ElevatedButtonDefault.textFontSize(),
+                    color: ElevatedButtonDefault.textColor(),
+                  ),
+                  maxLines: ElevatedButtonDefault.textMaxLines(),
+                ),
               ),
-              child: AutoSizeText(
-                'Items',
-                style: TextStyle(fontSize: 50, color: Colors.black),
-                maxLines: 1,
+              ElevatedButton(
+                onPressed: () {
+                  navigatorKey.currentState?.push(
+                    MaterialPageRoute(builder: (_) => CategoriesScreen()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  minimumSize: ElevatedButtonDefault.minimumSize(),
+                  backgroundColor: ElevatedButtonDefault.backgroundColor(),
+                ),
+                child: AutoSizeText(
+                  'Categories',
+                  style: TextStyle(
+                    fontSize: ElevatedButtonDefault.textFontSize(),
+                    color: ElevatedButtonDefault.textColor(),
+                  ),
+                  maxLines: ElevatedButtonDefault.textMaxLines(),
+                ),
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                navigatorKey.currentState?.push(
-                  MaterialPageRoute(builder: (_) => CategoriesScreen()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size.fromHeight(100),
-                backgroundColor: Colors.blueGrey[200],
+              ElevatedButton(
+                onPressed: () {
+                  navigatorKey.currentState?.push(
+                    MaterialPageRoute(builder: (_) => StoresScreen()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  minimumSize: ElevatedButtonDefault.minimumSize(),
+                  backgroundColor: ElevatedButtonDefault.backgroundColor(),
+                ),
+                child: AutoSizeText(
+                  'Stores',
+                  style: TextStyle(
+                    fontSize: ElevatedButtonDefault.textFontSize(),
+                    color: ElevatedButtonDefault.textColor(),
+                  ),
+                  maxLines: ElevatedButtonDefault.textMaxLines(),
+                ),
               ),
-              child: AutoSizeText(
-                'Categories',
-                style: TextStyle(fontSize: 50, color: Colors.black),
-                maxLines: 1,
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                navigatorKey.currentState?.push(
-                  MaterialPageRoute(builder: (_) => StoresScreen()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size.fromHeight(100),
-                backgroundColor: Colors.blueGrey[200],
-              ),
-              child: AutoSizeText(
-                'Stores',
-                style: TextStyle(fontSize: 50, color: Colors.black),
-                maxLines: 1,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

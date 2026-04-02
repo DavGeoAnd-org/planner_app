@@ -129,7 +129,7 @@ class _WeightScreenState extends State<WeightScreen> {
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: 'Enter weight',
+                      labelText: 'Enter weight',
                     ),
                   ),
                   actions: [
