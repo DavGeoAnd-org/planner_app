@@ -1,11 +1,13 @@
-import 'dart:convert';
-import 'dart:io';
-
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:planner_app/grocery/store/store.dart';
 import 'package:planner_app/grocery/store/store_detail_screen.dart';
-import 'package:planner_app/main.dart';
+import 'package:planner_app/grocery/store/store_new_screen.dart';
+import 'package:planner_app/grocery/store/store_request.dart';
+import 'package:planner_app/helper.dart';
+import 'package:searchable_listview/searchable_listview.dart';
+
+import '../../main.dart';
 
 class StoresScreen extends StatefulWidget {
   const StoresScreen({super.key});
@@ -17,127 +19,69 @@ class StoresScreen extends StatefulWidget {
 }
 
 class _StoresScreenState extends State<StoresScreen> {
-  late Future<List<Store>> stores;
-
-  @override
-  void initState() {
-    super.initState();
-    stores = getStores();
-  }
+  int _searchableListKey = 1;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(title: Text("Stores")),
-      body: FutureBuilder(
-        future: stores,
-        builder: (BuildContext context, AsyncSnapshot<List<Store>> snapshot) {
-          if (snapshot.hasData) {
-            List<Store> storeList = snapshot.data!;
-            return ListView.builder(
-              itemCount: storeList.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  child: ListTile(
-                    title: Text(storeList[index].name),
-                    onTap: () {
-                      navigatorKey.currentState?.push(
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              StoreDetailScreen(store: storeList[index]),
-                        ),
-                      );
-                    },
+      resizeToAvoidBottomInset: ScaffoldDefault.resizeToAvoidBottomInset(),
+      appBar: AppBar(
+        title: AutoSizeText('Stores', maxLines: ScaffoldDefault.textMaxLines()),
+        // leading: BackButton(onPressed: () {}),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () async {
+              final bool? result = await navigatorKey.currentState?.push(
+                MaterialPageRoute(builder: (_) => StoreNewScreen()),
+              );
+              if (result != null && result) {
+                setState(() {
+                  _searchableListKey *= -1;
+                });
+              }
+            },
+          ),
+        ],
+      ),
+      body: SafeArea(
+        minimum: SafeAreaDefault.minimum(),
+        child: SearchableList<Store>.async(
+          key: ValueKey(_searchableListKey),
+          asyncListCallback: () async => await allStores(),
+          asyncListFilter: (query, list) => list
+              .where(
+                (data) => data.name.toUpperCase().contains(query.toUpperCase()),
+              )
+              .toList(),
+          itemBuilder: (data) => Card(
+            child: ListTile(
+              title: AutoSizeText(
+                data.name,
+                maxLines: SearchableListDefault.textMaxLines(),
+              ),
+              onTap: () async {
+                final bool? result = await navigatorKey.currentState?.push(
+                  MaterialPageRoute(
+                    builder: (_) => StoreDetailScreen(
+                      store: RecordId.stringValueFromId(data.id),
+                    ),
                   ),
                 );
+                if (result != null && result) {
+                  setState(() {
+                    _searchableListKey *= -1;
+                  });
+                }
               },
-            );
-          } else if (snapshot.hasError) {
-            return Text('${snapshot.error}');
-          }
-          return Center(child: CircularProgressIndicator());
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          TextEditingController storeController = TextEditingController();
-          bool result = await showDialog(
-            context: context,
-            builder: (BuildContext context) => AlertDialog(
-              content: TextField(
-                controller: storeController,
-                keyboardType: TextInputType.name,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter store',
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => navigatorKey.currentState?.pop(false),
-                  child: Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    addStore(
-                      storeController.text,
-                    ).then((result) => navigatorKey.currentState?.pop(true));
-                  },
-                  child: Text('Add'),
-                ),
-              ],
             ),
-          );
-          if (result) {
-            setState(() {
-              stores = getStores();
-            });
-          }
-        },
-        child: Icon(Icons.add),
-      ),
-    );
-  }
-
-  static Future<List<Store>> getStores() async {
-    final response = await http
-        .get(
-          Uri.parse(
-            "${const String.fromEnvironment('BASE_SERVICE_URL')}/grocery/stores",
           ),
-        )
-        .timeout(
-          const Duration(seconds: 10),
-          onTimeout: () {
-            throw const HttpException("Service Not Running");
-          },
-        );
-
-    if (response.statusCode == 200) {
-      List<Store> storeList = (json.decode(response.body) as List)
-          .map((data) => Store.fromMap(data))
-          .toList();
-      return storeList;
-    } else {
-      throw Exception('Failed to load Store list');
-    }
-  }
-
-  Future<String> addStore(String text) async {
-    Store store = Store(name: text);
-
-    final response = await http.post(
-      Uri.parse(
-        "${const String.fromEnvironment('BASE_SERVICE_URL')}/grocery/stores",
+          loadingWidget: const Center(child: CircularProgressIndicator()),
+          errorWidget: const Center(child: Icon(Icons.error)),
+          inputDecoration: InputDecoration(labelText: ''),
+          listViewPadding: SearchableListDefault.listViewPadding(),
+        ),
       ),
-      body: store.toJson(),
     );
-
-    if (response.statusCode == 201) {
-      return (jsonDecode(response.body) as Map<String, dynamic>)['message'];
-    } else {
-      throw Exception('Failed to add category');
-    }
   }
 }

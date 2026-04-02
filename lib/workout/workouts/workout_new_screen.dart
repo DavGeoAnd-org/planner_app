@@ -50,14 +50,14 @@ class _WorkoutNewScreenState extends State<WorkoutNewScreen> {
                         TextField(
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
-                            hintText: 'Name',
+                            labelText: 'Name',
                           ),
                           controller: nameController,
                         ),
                         TextField(
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
-                            hintText: 'When',
+                            labelText: 'When',
                           ),
                           controller: whenController,
                         ),

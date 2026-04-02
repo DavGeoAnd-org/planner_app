@@ -140,7 +140,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
             TextField(
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
-                hintText: 'Instructions',
+                labelText: 'Instructions',
               ),
               controller: instructionsController,
               minLines: 5,

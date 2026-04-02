@@ -1,12 +1,13 @@
-import 'dart:convert';
-
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:multi_dropdown/multi_dropdown.dart';
-import 'package:planner_app/grocery/item/item.dart';
-import 'package:planner_app/grocery/item/item_detail_screen.dart';
 import 'package:planner_app/grocery/item/item_request.dart';
-import 'package:planner_app/main.dart';
+import 'package:searchable_listview/searchable_listview.dart';
+
+import '../../helper.dart';
+import '../../main.dart';
+import 'item.dart';
+import 'item_detail_screen.dart';
+import 'item_new_screen.dart';
 
 class ItemsScreen extends StatefulWidget {
   const ItemsScreen({super.key});
@@ -18,187 +19,69 @@ class ItemsScreen extends StatefulWidget {
 }
 
 class _ItemsScreenState extends State<ItemsScreen> {
-  late Future<List<Item>> items;
-
-  @override
-  void initState() {
-    super.initState();
-    items = getItems();
-  }
+  int _searchableListKey = 1;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(title: Text("Items")),
-      body: FutureBuilder(
-        future: items,
-        builder: (BuildContext context, AsyncSnapshot<List<Item>> snapshot) {
-          if (snapshot.hasData) {
-            List<Item> itemList = snapshot.data!;
-            return ListView.builder(
-              itemCount: itemList.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  child: ListTile(
-                    title: Text(itemList[index].name),
-                    onTap: () {
-                      navigatorKey.currentState?.push(
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              ItemDetailScreen(item: itemList[index]),
-                        ),
-                      );
-                    },
+      resizeToAvoidBottomInset: ScaffoldDefault.resizeToAvoidBottomInset(),
+      appBar: AppBar(
+        title: AutoSizeText('Items', maxLines: ScaffoldDefault.textMaxLines()),
+        // leading: BackButton(onPressed: () {}),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () async {
+              final bool? result = await navigatorKey.currentState?.push(
+                MaterialPageRoute(builder: (_) => ItemNewScreen()),
+              );
+              if (result != null && result) {
+                setState(() {
+                  _searchableListKey *= -1;
+                });
+              }
+            },
+          ),
+        ],
+      ),
+      body: SafeArea(
+        minimum: SafeAreaDefault.minimum(),
+        child: SearchableList<Item>.async(
+          key: ValueKey(_searchableListKey),
+          asyncListCallback: () async => await allItems(),
+          asyncListFilter: (query, list) => list
+              .where(
+                (data) => data.name.toUpperCase().contains(query.toUpperCase()),
+              )
+              .toList(),
+          itemBuilder: (data) => Card(
+            child: ListTile(
+              title: AutoSizeText(
+                data.name,
+                maxLines: SearchableListDefault.textMaxLines(),
+              ),
+              onTap: () async {
+                final bool? result = await navigatorKey.currentState?.push(
+                  MaterialPageRoute(
+                    builder: (_) => ItemDetailScreen(
+                      item: RecordId.stringValueFromId(data.id),
+                    ),
                   ),
                 );
+                if (result != null && result) {
+                  setState(() {
+                    _searchableListKey *= -1;
+                  });
+                }
               },
-            );
-          } else if (snapshot.hasError) {
-            return Text('${snapshot.error}');
-          }
-          return Center(child: CircularProgressIndicator());
-        },
+            ),
+          ),
+          loadingWidget: const Center(child: CircularProgressIndicator()),
+          errorWidget: const Center(child: Icon(Icons.error)),
+          inputDecoration: InputDecoration(labelText: ''),
+          listViewPadding: SearchableListDefault.listViewPadding(),
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          bool result = await showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              TextEditingController itemNameController =
-                  TextEditingController();
-              MultiSelectController<String> categorySelectController =
-                  MultiSelectController();
-              MultiSelectController<String> storeSelectController =
-                  MultiSelectController();
-              List<StoreTextField> storeTextFields = [];
-              return StatefulBuilder(
-                builder: (context, setState) {
-                  return AlertDialog(
-                    content: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      spacing: 10,
-                      children: [
-                        TextField(
-                          controller: itemNameController,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Enter item name',
-                          ),
-                        ),
-                        MultiDropdown<String>.future(
-                          controller: categorySelectController,
-                          searchEnabled: true,
-                          singleSelect: true,
-                          future: () async {
-                            final response = await http.get(
-                              Uri.parse(
-                                "${const String.fromEnvironment('BASE_SERVICE_URL')}/grocery/categories",
-                              ),
-                            );
-                            final data = jsonDecode(response.body) as List;
-                            return data
-                                .map(
-                                  (e) => DropdownItem(
-                                    label: e['name'] as String,
-                                    value: e['name'] as String,
-                                  ),
-                                )
-                                .toList();
-                          },
-                        ),
-                        MultiDropdown<String>.future(
-                          controller: storeSelectController,
-                          searchEnabled: true,
-                          future: () async {
-                            final response = await http.get(
-                              Uri.parse(
-                                "${const String.fromEnvironment('BASE_SERVICE_URL')}/grocery/stores",
-                              ),
-                            );
-                            final data = jsonDecode(response.body) as List;
-                            return data
-                                .map(
-                                  (e) => DropdownItem(
-                                    label: e['name'] as String,
-                                    value: e['name'] as String,
-                                  ),
-                                )
-                                .toList();
-                          },
-                          onSelectionChange: (selectedItems) {
-                            storeTextFields.clear();
-                            setState(() {
-                              for (String selectedStore in selectedItems) {
-                                StoreTextField storeTextField = StoreTextField(
-                                  store: selectedStore,
-                                );
-                                storeTextFields.add(storeTextField);
-                              }
-                            });
-                          },
-                        ),
-                        for (var i = 0; i < storeTextFields.length; i++)
-                          Container(
-                            margin: EdgeInsets.all(5),
-                            child: InputDecorator(
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                              ),
-                              child: Column(children: [storeTextFields[i]]),
-                            ),
-                          ),
-                      ],
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => navigatorKey.currentState?.pop(false),
-                        child: Text('Cancel'),
-                      ),
-                      TextButton(
-                        onPressed: () async {
-                          addItem(
-                            itemNameController.text,
-                            categorySelectController.selectedItems.single,
-                            storeTextFields,
-                          ).then(
-                            (result) => navigatorKey.currentState?.pop(true),
-                          );
-                        },
-                        child: Text('Add'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-          );
-          if (result) {
-            setState(() {
-              items = getItems();
-            });
-          }
-        },
-        child: Icon(Icons.add),
-      ),
-    );
-  }
-}
-
-class StoreTextField extends StatelessWidget {
-  final String store;
-  final TextEditingController controller = TextEditingController();
-
-  StoreTextField({super.key, required this.store});
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(labelText: store),
     );
   }
 }
