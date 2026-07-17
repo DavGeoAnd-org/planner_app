@@ -54,7 +54,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           key: ValueKey(_searchableListKey),
           asyncListCallback: () async =>
               await allCategoriesWithStoreListStatus(),
-          asyncListFilter: (query, list) => list
+          asyncListFilter: (query, list) async => list
               .where(
                 (category) => category.name.toUpperCase().contains(query.toUpperCase()),
               )

@@ -49,7 +49,7 @@ class _ItemsScreenState extends State<ItemsScreen> {
         child: SearchableList<Item>.async(
           key: ValueKey(_searchableListKey),
           asyncListCallback: () async => await allItems(),
-          asyncListFilter: (query, list) => list
+          asyncListFilter: (query, list) async => list
               .where(
                 (data) => data.name.toUpperCase().contains(query.toUpperCase()),
               )
